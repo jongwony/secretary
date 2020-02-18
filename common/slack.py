@@ -2,6 +2,8 @@ import json
 
 from slacker import Slacker
 
+from .connector import get_parameter
+
 
 class AttachmentBuilder:
     def __init__(self):
@@ -49,8 +51,8 @@ class AttachmentBuilder:
 
 
 class Slack:
-    def __init__(self, token, channel=None, username=None):
-        self.slack = Slacker(token)
+    def __init__(self, channel=None, username=None):
+        self.slack = Slacker(get_parameter('/dev_restrict/slack'))
         self.channel = channel
         self.username = username
 

@@ -29,7 +29,7 @@ def rdb_dump(client_msg_id, url, title, user, channel):
 
 
 def post_slack(channel, url):
-    bot = Slack('/dev_restrict/slack')
+    bot = Slack()
     bot.post_message(text=f'중복 url: {url}', channel=channel, username='Link Crawler')
 
 
