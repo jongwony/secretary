@@ -9,7 +9,7 @@ from common.connector import rdb_connector
 
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 ssm = boto3.client('ssm', region_name='ap-northeast-2')
-engine = rdb_connector('/aurora/serverless', 'secretary', echo=True)
+engine = rdb_connector('/aurora/serverless', 'secretary')
 
 
 def get_parameter(name):
