@@ -9,6 +9,7 @@ from common.connector import rdb_connector
 
 dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
 ssm = boto3.client('ssm', region_name='ap-northeast-2')
+engine = rdb_connector('/aurora/serverless', 'secretary', echo=True)
 
 
 def get_parameter(name):
@@ -21,7 +22,6 @@ def nosql_body_dump(body):
 
 
 def rdb_dump(url, title):
-    engine = rdb_connector('/aurora/serverless', 'secretary', echo=True)
     return engine.execute('''INSERT INTO dev_restrict(url, title) VALUES (%s, %s)''', [url, title])
 
 
@@ -51,7 +51,7 @@ def lambda_handler(event, context):
     except IntegrityError:
         post_slack(token, channel, url)
     else:
-        body['id'] = rdb_resp.rowcount
+        body['id'] = engine.execute('SELECT LAST_INSERT_ID()').fetchone()[0]
         nosql_resp = nosql_body_dump(body)
         print('dynamodb dumped')
         print(vars(nosql_resp))
