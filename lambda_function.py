@@ -42,23 +42,21 @@ def lambda_handler(event, context):
     except TypeError:
         return
     if not url:
-        print('Not link')
+        print('Invalid link')
         return
 
     # debug
     print(f'{event=}', f'{vars(context)=}')
 
     try:
-        rdb_resp = rdb_dump(client_msg_id, url, title, user, channel)
+        rdb_dump(client_msg_id, url, title, user, channel)
         print('rdb dumped')
-        print(vars(rdb_resp.context))
     except IntegrityError:
         post_slack(channel, url)
     else:
         body['id'] = client_msg_id
-        nosql_resp = nosql_body_dump(body)
+        nosql_body_dump(body)
         print('dynamodb dumped')
-        print(vars(nosql_resp))
 
     # test handshake response
     return {
