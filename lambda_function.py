@@ -28,17 +28,17 @@ def rdb_dump(client_msg_id, url, title, user, channel):
     )
 
 
-def post_slack(token, channel, url):
-    bot = Slack(token)
+def post_slack(channel, url):
+    bot = Slack('/dev_restrict/slack')
     bot.post_message(text=f'중복 url: {url}', channel=channel, username='Link Crawler')
 
 
 def lambda_handler(event, context):
     body = json.loads(event['body'])
     try:
-        token, user, channel = jmespath.search('[token, user, channel]', body)
+        channel = jmespath.search('event.channel', body)
         url, title = jmespath.search('event.message.attachments[0].[from_url, title]', body)
-        client_msg_id = jmespath.search('event.message.client_msg_id', body)
+        user, client_msg_id = jmespath.search('event.message.[user, client_msg_id]', body)
     except TypeError:
         return
     if not url:
@@ -53,7 +53,7 @@ def lambda_handler(event, context):
         print('rdb dumped')
         print(vars(rdb_resp.context))
     except IntegrityError:
-        post_slack(token, channel, url)
+        post_slack(channel, url)
     else:
         body['id'] = client_msg_id
         nosql_resp = nosql_body_dump(body)
