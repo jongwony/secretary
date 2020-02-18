@@ -21,8 +21,11 @@ def nosql_body_dump(body):
     return nosql_table.put_item(Item=body)
 
 
-def rdb_dump(url, title):
-    return engine.execute('''INSERT INTO dev_restrict(url, title) VALUES (%s, %s)''', [url, title])
+def rdb_dump(client_msg_id, url, title, user, channel):
+    return engine.execute(
+        'INSERT INTO dev_restrict(id, url, title, user, channel) VALUES (%s, %s, %s, %s, %s)',
+        [client_msg_id, url, title, user, channel],
+    )
 
 
 def post_slack(token, channel, url):
@@ -33,8 +36,9 @@ def post_slack(token, channel, url):
 def lambda_handler(event, context):
     body = json.loads(event['body'])
     try:
-        token, team_id, api_app_id, channel = jmespath.search('[token, team_id, api_app_id, channel]', body)
+        token, user, channel = jmespath.search('[token, user, channel]', body)
         url, title = jmespath.search('event.message.attachments[0].[from_url, title]', body)
+        client_msg_id = jmespath.search('event.message.client_msg_id', body)
     except TypeError:
         return
     if not url:
@@ -45,13 +49,13 @@ def lambda_handler(event, context):
     print(f'{event=}', f'{vars(context)=}')
 
     try:
-        rdb_resp = rdb_dump(url, title)
+        rdb_resp = rdb_dump(client_msg_id, url, title, user, channel)
         print('rdb dumped')
         print(vars(rdb_resp.context))
     except IntegrityError:
         post_slack(token, channel, url)
     else:
-        body['id'] = engine.execute('SELECT LAST_INSERT_ID()').fetchone()[0]
+        body['id'] = client_msg_id
         nosql_resp = nosql_body_dump(body)
         print('dynamodb dumped')
         print(vars(nosql_resp))
