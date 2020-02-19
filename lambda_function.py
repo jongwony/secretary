@@ -28,35 +28,41 @@ def rdb_dump(client_msg_id, url, title, user, channel):
     )
 
 
-def post_slack(channel, url):
-    bot = Slack()
-    bot.post_message(text=f'중복 url: {url}', channel=channel, username='Link Crawler')
+def integrity_check(client_msg_id, url, title, user, channel):
+    def post_slack():
+        bot = Slack()
+        bot.post_message(text=f'중복 url: {url}', channel=channel, username='Link Crawler')
+
+    try:
+        rdb_dump(client_msg_id, url, title, user, channel)
+        print(f'rdb: {url} dumped')
+    except IntegrityError:
+        post_slack()
 
 
 def lambda_handler(event, context):
     body = json.loads(event['body'])
     try:
         channel = jmespath.search('event.channel', body)
-        url, title = jmespath.search('event.message.attachments[0].[from_url, title]', body)
+        attachments = jmespath.search('event.message.attachments[].[original_url, title]', body)
         user, client_msg_id = jmespath.search('event.message.[user, client_msg_id]', body)
+        urls = jmespath.search('event.message.blocks[].elements[].elements[].url', body)
     except TypeError:
-        return
-    if not url:
-        print('Invalid link')
         return
 
     # debug
-    print(f'{event=}', f'{vars(context)=}')
+    print(f'{event=}')
 
-    try:
-        rdb_dump(client_msg_id, url, title, user, channel)
-        print('rdb dumped')
-    except IntegrityError:
-        post_slack(channel, url)
-    else:
-        body['id'] = client_msg_id
-        nosql_body_dump(body)
-        print('dynamodb dumped')
+    # rdb dump
+    for url, title in attachments:
+        integrity_check(client_msg_id, url, title, user, channel)
+    for url in set(urls) - set(x[0] for x in attachments):
+        integrity_check(client_msg_id, url, None, user, channel)
+
+    # nosql dump
+    body['id'] = client_msg_id
+    nosql_body_dump(body)
+    print('dynamodb dumped')
 
     # test handshake response
     return {
