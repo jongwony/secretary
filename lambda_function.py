@@ -50,6 +50,9 @@ def lambda_handler(event, context):
     except TypeError:
         return
 
+    if not urls:
+        return
+
     # debug
     print(f'{event=}')
 
