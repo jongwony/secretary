@@ -59,13 +59,15 @@ def lambda_handler(event, context):
     # rdb dump
     for url, title in attachments:
         integrity_check(client_msg_id, url, title, user, channel)
-    for url in set(urls) - set(x[0] for x in attachments):
-        integrity_check(client_msg_id, url, None, user, channel)
 
-    # nosql dump
-    body['id'] = client_msg_id
-    nosql_body_dump(body)
-    print('dynamodb dumped')
+    if diff_set := set(urls) - set(x[0] for x in attachments):
+        for url in diff_set:
+            integrity_check(client_msg_id, url, None, user, channel)
+
+        # nosql dump
+        body['id'] = client_msg_id
+        nosql_body_dump(body)
+        print('dynamodb dumped')
 
     # test handshake response
     return {
