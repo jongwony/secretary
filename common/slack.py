@@ -52,7 +52,7 @@ class AttachmentBuilder:
 
 class Slack:
     def __init__(self, channel=None, username=None):
-        self.slack = Slacker(get_parameter('/dev_restrict/slack'))
+        self.slack = Slacker(get_parameter('/api_key/slack/dev_restrict'))
         self.channel = channel
         self.username = username
 
