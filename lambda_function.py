@@ -42,6 +42,8 @@ def integrity_check(client_msg_id, url, title, user, channel):
 
 def lambda_handler(event, context):
     body = json.loads(event['body'])
+    print(f'{body=}')
+
     try:
         channel = jmespath.search('event.channel', body)
         attachments = jmespath.search('event.message.attachments[].[from_url, title]', body)
@@ -49,11 +51,6 @@ def lambda_handler(event, context):
         urls = jmespath.search('event.message.blocks[].elements[].elements[].url', body)
     except TypeError:
         return
-
-    # debug
-    print(f'{event=}')
-    print(f'{attachments=}')
-    print(f'{urls=}')
 
     if not urls:
         return
