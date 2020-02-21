@@ -44,16 +44,13 @@ def lambda_handler(event, context):
     body = json.loads(event['body'])
     print(f'{body=}')
 
-    try:
-        channel = jmespath.search('event.channel', body)
-        attachments = jmespath.search('event.message.attachments[].[from_url, title]', body) or []
-        user, client_msg_id = jmespath.search('event.message.[user, client_msg_id]', body)
-        urls = jmespath.search('event.message.blocks[].elements[].elements[].url', body) or []
-    except TypeError:
-        return
+    channel = jmespath.search('event.channel', body)
+    user, client_msg_id = jmespath.search('event | message.[user, client_msg_id] || [user, client_msg_id]', body)
+    attachments = jmespath.search('event.message.attachments.[from_url, title]', body) or []
 
-    if not urls:
-        urls = jmespath.search('event.blocks[].elements[].elements[].url', body) or []
+    blocks = jmespath.search('event.message.blocks[] || event.blocks[]', body)
+    urls = jmespath.search('[].elements[].elements[].url', blocks) or []
+    print(f'{urls=}')
     if not urls:
         return
 
@@ -62,6 +59,7 @@ def lambda_handler(event, context):
         integrity_check(client_msg_id, url, title, user, channel)
 
     if diff_set := set(urls) - set(x[0] for x in attachments):
+        print(f'{diff_set=}')
         for url in diff_set:
             integrity_check(client_msg_id, url, None, user, channel)
 
@@ -73,6 +71,6 @@ def lambda_handler(event, context):
     # test handshake response
     return {
         'statusCode': 200,
-        'headers': {"content-type": "text/plain"},
-        'body': body.get('challenge')
+        'headers': {"content-type": "text/plain", 'X-Slack-No-Retry': 1},
+        'body': body.get('challenge'),
     }
