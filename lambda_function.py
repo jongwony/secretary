@@ -46,12 +46,14 @@ def lambda_handler(event, context):
 
     try:
         channel = jmespath.search('event.channel', body)
-        attachments = jmespath.search('event.message.attachments[].[from_url, title]', body)
+        attachments = jmespath.search('event.message.attachments[].[from_url, title]', body) or []
         user, client_msg_id = jmespath.search('event.message.[user, client_msg_id]', body)
-        urls = jmespath.search('event.message.blocks[].elements[].elements[].url', body)
+        urls = jmespath.search('event.message.blocks[].elements[].elements[].url', body) or []
     except TypeError:
         return
 
+    if not urls:
+        urls = jmespath.search('event.blocks[].elements[].elements[].url', body) or []
     if not urls:
         return
 
