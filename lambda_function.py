@@ -44,17 +44,19 @@ def lambda_handler(event, context):
     body = json.loads(event['body'])
     try:
         channel = jmespath.search('event.channel', body)
-        attachments = jmespath.search('event.message.attachments[].[original_url, title]', body)
+        attachments = jmespath.search('event.message.attachments[].[from_url, title]', body)
         user, client_msg_id = jmespath.search('event.message.[user, client_msg_id]', body)
         urls = jmespath.search('event.message.blocks[].elements[].elements[].url', body)
     except TypeError:
         return
 
-    if not urls:
-        return
-
     # debug
     print(f'{event=}')
+    print(f'{attachments=}')
+    print(f'{urls=}')
+
+    if not urls:
+        return
 
     # rdb dump
     for url, title in attachments:
