@@ -41,8 +41,9 @@ def integrity_check(client_msg_id, url, title, user, channel):
 
 
 def lambda_handler(event, context):
-    body = json.loads(event['body'])
+    body = json.loads(event.pop('body'))
     print(f'{body=}')
+    print(f'{event=}')
 
     channel = jmespath.search('event.channel', body)
     user, client_msg_id = jmespath.search('event | message.[user, client_msg_id] || [user, client_msg_id]', body)
