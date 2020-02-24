@@ -47,7 +47,7 @@ def lambda_handler(event, context):
 
     channel = jmespath.search('event.channel', body)
     user, client_msg_id = jmespath.search('event | message.[user, client_msg_id] || [user, client_msg_id]', body)
-    attachments = jmespath.search('event.message.attachments.[from_url, title]', body) or []
+    attachments = jmespath.search('event.message.attachments[].[from_url, title]', body) or []
 
     blocks = jmespath.search('event.message.blocks[] || event.blocks[]', body)
     urls = jmespath.search('[].elements[].elements[].url', blocks) or []
