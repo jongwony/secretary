@@ -40,20 +40,43 @@ def integrity_check(client_msg_id, url, title, user, channel):
         post_slack()
 
 
+def server_response(status_code, headers=None, body=None):
+    if headers is None:
+        headers = {}
+    if body is None:
+        body = {}
+    return {
+        'statusCode': status_code,
+        'headers': {'content-type': 'application/json', **headers},
+        'body': json.dumps(body),
+        "isBase64Encoded": False,
+    }
+
+
 def lambda_handler(event, context):
     body = json.loads(event.pop('body'))
+    headers = event.pop('headers')
+
+    print(f'{headers=}')
     print(f'{body=}')
-    print(f'{event=}')
+
+    if jmespath.search('event.subtype', body) != 'message_changed':
+        return server_response(200)
+
+    if reason := headers.get('X-Slack-Retry-Reason'):
+        print(reason)
+        return server_response(500, headers={'X-Slack-No-Retry': 1})
 
     channel = jmespath.search('event.channel', body)
     user, client_msg_id = jmespath.search('event | message.[user, client_msg_id] || [user, client_msg_id]', body)
-    attachments = jmespath.search('event.message.attachments[].[from_url, title]', body) or []
-
+    attachments = jmespath.search('event.message.attachments[].[title_link, title]', body) or []
     blocks = jmespath.search('event.message.blocks[] || event.blocks[]', body)
     urls = jmespath.search('[].elements[].elements[].url', blocks) or []
+    if not attachments:
+        return server_response(200)
+
+    print(f'{attachments=}')
     print(f'{urls=}')
-    if not urls:
-        return
 
     # rdb dump
     for url, title in attachments:
@@ -70,8 +93,4 @@ def lambda_handler(event, context):
         print('dynamodb dumped')
 
     # test handshake response
-    return {
-        'statusCode': 200,
-        'headers': {"content-type": "text/plain", 'X-Slack-No-Retry': 1},
-        'body': body.get('challenge'),
-    }
+    return server_response(200, body={'challenge': body.get('challenge')})
