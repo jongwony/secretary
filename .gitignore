@@ -2,3 +2,7 @@ python
 *.zip
 venv/
 .idea/
+
+.terraform/
+*.tfstate
+*.tfstate.backup

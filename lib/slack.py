@@ -51,8 +51,50 @@ class AttachmentBuilder:
 
 
 class Slack:
+    ssm_prefix = '/api_key/slack/dev_restrict/secretary'
+
+    @classmethod
+    def get_signing_secret(cls):
+        return get_parameter(f'{cls.ssm_prefix}/signing_secret')
+
+    @classmethod
+    def get_bot_user_oauth_token(cls):
+        return get_parameter(f'{cls.ssm_prefix}/bot_user_oauth_access_token')
+
+    @classmethod
+    def verification_requests(cls, headers, body):
+        """
+        https://api.slack.com/docs/verifying-requests-from-slack#signing_secrets_admin_page
+        Example works... but Handshake NOT Works...
+        """
+        import hmac
+        import hashlib
+        from time import time
+        from urllib.parse import urlencode
+
+        slack_signing_secret = cls.get_signing_secret()
+        timestamp = headers['X-Slack-Request-Timestamp']
+        origin_signature = headers['X-Slack-Signature']
+
+        # The request timestamp is more than five minutes from local time.
+        # It could be a replay attack, so let's ignore it.
+        if abs(int(time()) - int(timestamp)) > 60 * 5:
+            return False
+
+        sig_basestring = f'v0:{timestamp}:{urlencode(body)}'
+        request_hash = hmac.new(
+            slack_signing_secret.encode(),
+            msg=sig_basestring.encode(),
+            digestmod=hashlib.sha256,
+        ).hexdigest()
+        calc_signature = f'v0={request_hash}'
+
+        print(origin_signature, calc_signature)
+
+        return hmac.compare_digest(origin_signature, calc_signature)
+
     def __init__(self, channel=None, username=None):
-        self.slack = Slacker(get_parameter('/api_key/slack/dev_restrict'))
+        self.slack = Slacker(Slack.get_bot_user_oauth_token())
         self.channel = channel
         self.username = username
 
