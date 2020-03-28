@@ -54,6 +54,19 @@ class Slack:
     ssm_prefix = '/api_key/slack/dev_restrict/secretary'
 
     @classmethod
+    def server_response(cls, status_code, headers=None, body=None):
+        if headers is None:
+            headers = {}
+        if body is None:
+            body = {}
+        return {
+            'statusCode': status_code,
+            'headers': {'content-type': 'application/json', **headers},
+            'body': json.dumps(body),
+            "isBase64Encoded": False,
+        }
+
+    @classmethod
     def get_signing_secret(cls):
         return get_parameter(f'{cls.ssm_prefix}/signing_secret')
 

@@ -76,28 +76,15 @@ def integrity_check(client_msg_id, url, title, user, channel):
         post_slack()
 
 
-def server_response(status_code, headers=None, body=None):
-    if headers is None:
-        headers = {}
-    if body is None:
-        body = {}
-    return {
-        'statusCode': status_code,
-        'headers': {'content-type': 'application/json', **headers},
-        'body': json.dumps(body),
-        "isBase64Encoded": False,
-    }
-
-
 def diverge(headers, body):
     # Slack Error
     if reason := headers.get('X-Slack-Retry-Reason'):
         print(reason)
-        return server_response(500, headers={'X-Slack-No-Retry': 1})
+        return Slack.server_response(500, headers={'X-Slack-No-Retry': 1})
 
     function = getattr(TypeDiverge, jmespath.search('type', body))
     body = function(headers, body) if callable(function) else None
-    return server_response(200, body=body)
+    return Slack.server_response(200, body=body)
 
 
 def lambda_handler(event, context):
