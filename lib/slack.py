@@ -1,4 +1,5 @@
 import json
+from operator import attrgetter
 
 from slacker import Slacker
 
@@ -107,7 +108,7 @@ class Slack:
         return hmac.compare_digest(origin_signature, calc_signature)
 
     def __init__(self, channel=None, username=None):
-        self.slack = Slacker(Slack.get_bot_user_oauth_token())
+        self.slack = Slacker(self.get_bot_user_oauth_token())
         self.channel = channel
         self.username = username
 
@@ -126,3 +127,6 @@ class Slack:
             command=command,
             text=text,
         )
+
+    def api(self, method, *args, **kwargs):
+        return attrgetter(method)(self.slack)(*args, **kwargs)
