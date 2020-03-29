@@ -64,6 +64,6 @@ data "archive_file" "lib" {
 
 data "archive_file" "project" {
   type = "zip"
-  source_dir = "../lambda"
+  source_dir = "../lambda_function"
   output_path = var.project_zip
 }

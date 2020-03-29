@@ -15,9 +15,13 @@ class TypeDiverge:
 
     @classmethod
     def event_callback(cls, headers, body):
-        message_subtype_diverge = getattr(MessageSubtypeDiverge, jmespath.search('event.type', body))
-        if callable(message_subtype_diverge):
-            message_subtype_diverge(headers, body)
+        return diverse(MessageTypeDiverge, headers, body, 'event.type')
+
+
+class MessageTypeDiverge:
+    @classmethod
+    def message(cls, headers, body):
+        return diverse(MessageSubtypeDiverge, headers, body, 'event.subtype')
 
 
 class MessageSubtypeDiverge:
@@ -76,15 +80,21 @@ def integrity_check(client_msg_id, url, title, user, channel):
         post_slack()
 
 
-def diverge(headers, body):
+def diverse(cls, headers, body, query):
+    query_diverge = getattr(cls, jmespath.search(query, body) or '', None)
+    if callable(query_diverge):
+        return query_diverge(headers, body)
+
+
+def main(headers, body):
     # Slack Error
     if reason := headers.get('X-Slack-Retry-Reason'):
         print(reason)
         return Slack.server_response(500, headers={'X-Slack-No-Retry': 1})
 
-    function = getattr(TypeDiverge, jmespath.search('type', body))
-    body = function(headers, body) if callable(function) else None
-    return Slack.server_response(200, body=body)
+    result = diverse(TypeDiverge, headers, body, 'type')
+    print(result)
+    return Slack.server_response(200, body=result)
 
 
 def lambda_handler(event, context):
@@ -94,4 +104,5 @@ def lambda_handler(event, context):
     print(f'{headers=}')
     print(f'{body=}')
 
-    return diverge(headers, body)
+    # TODO: async callback server_response
+    return main(headers, body)
