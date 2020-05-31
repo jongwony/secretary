@@ -51,5 +51,5 @@ def main(event):
 
 
 def lambda_handler(event, context):
-    print(f'{event=}')
+    print(event.get('body'))
     return main(event)

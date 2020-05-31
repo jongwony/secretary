@@ -36,7 +36,7 @@ def pretty_payload(engine):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": s
+                        "text": slack_escape(s),
                     }
                 } for s in serial_yield(engine)]
             ]
@@ -69,7 +69,10 @@ def lambda_handler(event, context):
     engine = rdb_connector('/aurora/serverless', 'secretary')
     if command == 'database':
         payload = pretty_payload(engine)
+    elif command == 'query':
+        payload = None
     else:
         payload = None
     print(f'{payload=}')
+    # TODO: timeout control
     return Slack.server_response(200, body=payload)
