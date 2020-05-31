@@ -24,13 +24,15 @@ def integrity_check(client_msg_id, url, title, user, channel):
         'channel': channel,
         'client_msg_id': client_msg_id,
     }
+    dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
+    nosql_table = dynamodb.Table('secretary')
+
     try:
-        dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
-        nosql_table = dynamodb.Table('secretary')
         response = nosql_table.get_item(Key=data)
         assert response.get('Item') is not None
     except AssertionError:
         post_slack()
+    else:
         nosql_body_dump(data)
 
 
