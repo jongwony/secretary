@@ -32,6 +32,15 @@ class MessageSubtypeDiverge:
             Payload=json.dumps(event).encode()
         )
 
+    @classmethod
+    def bot_message(cls, event):
+        lambda_client = boto3.client('lambda')
+        lambda_client.invoke(
+            FunctionName='event_bot_message',
+            InvocationType='Event',
+            Payload=json.dumps(event).encode()
+        )
+
 
 def dispatcher(cls, event, query):
     body = json.loads(event.get('body'))

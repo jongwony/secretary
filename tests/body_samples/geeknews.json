@@ -1,0 +1,41 @@
+{
+    "token": "FcLrpGmG3VeCuyd7bUMQszKz",
+    "team_id": "T48RY2MFH",
+    "api_app_id": "ABRRHSHHU",
+    "event": {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "[GeekNews] ConsoleImg - 개발자 콘솔에 이미지 표시하기",
+        "ts": "1591325990.000400",
+        "bot_id": "B010J11Q6KF",
+        "blocks": [
+            {
+                "type": "section",
+                "block_id": "4DkS",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*<https://news.hada.io/topic?id=2213&amp;utm_source=slack&amp;utm_medium=bot&amp;utm_campaign=T48RY2MFH|ConsoleImg - 개발자 콘솔에 이미지 표시하기>*",
+                    "verbatim": false
+                }
+            },
+            {
+                "type": "section",
+                "block_id": "sYR4",
+                "text": {
+                    "type": "plain_text",
+                    "text": "- CSS Background-image 로 활용가능한 모든 이미지 포맷 사용가능\nㅤ→ PNG/JPG/SVG 및 Animated GIF 까지 지원\n- 배경색 지정 가능 ( 기본 투명 )\n- 이미지 요청은 fetch 로 비동기 동작해서 성능에는 큰 이슈 없음 \nㅤ(모바일에서도 다운되는 건 알아서 막아야..)",
+                    "emoji": true
+                }
+            }
+        ],
+        "channel": "C010J11D5V3",
+        "event_ts": "1591325990.000400",
+        "channel_type": "channel"
+    },
+    "type": "event_callback",
+    "event_id": "Ev014FD8DMFH",
+    "event_time": 1591325990,
+    "authed_users": [
+        "UU42MN82Y"
+    ]
+}

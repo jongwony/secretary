@@ -79,3 +79,21 @@ resource "aws_lambda_function" "event_message_changed" {
     aws_lambda_layer_version.secretary_lib.arn
   ]
 }
+
+resource "aws_lambda_function" "event_bot_message" {
+  function_name = "event_bot_message"
+  description = "Secretary :: subtype bot_message from event_poll"
+
+  filename = data.archive_file.project.output_path
+  handler = "event_bot_message.lambda_handler"
+
+  source_code_hash = data.archive_file.project.output_base64sha256
+  runtime = "python3.8"
+  timeout = 300
+
+  role = aws_iam_role.secretary_for_lambda.arn
+  layers = [
+    aws_lambda_layer_version.secretary_package.arn,
+    aws_lambda_layer_version.secretary_lib.arn
+  ]
+}

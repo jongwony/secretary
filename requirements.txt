@@ -1,3 +1,5 @@
 pymysql
 sqlalchemy
 slacker
+requests
+bs4
