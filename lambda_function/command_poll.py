@@ -28,10 +28,14 @@ def serial_yield():
             '{url: id.S, channel: channel.S,'
             'user: user.S title: title.S,'
             'timestamp: timestamp.S}', d)
-        yield f"• <{parsed['url']}|{parsed['title']}>\n" \
-              f"  origin channel: <#{parsed['channel']}>\n" \
-              f"  origin user: {parsed['user']}\n" if parsed['user'] else '' \
-              f"  <!date^{timestamp(parsed['timestamp'])}^Posted {{date_num}} {{time_secs}}|Posted 2014-02-18 6:39:42 AM PST>\n" if parsed['timestamp'] else ''
+        string = ''
+        string += f"• <{parsed['url']}|{parsed['title']}>\n"
+        string += f"origin channel: <#{parsed['channel']}>\n"
+        if u := parsed['user']:
+            string += f"origin user: {u}\n"
+        if t := parsed['timestamp']:
+            string += f"<!date^{timestamp(t)}^Posted {{date_num}} {{time_secs}}|Posted 2014-02-18 6:39:42 AM PST>\n"
+        yield string
 
 
 def pretty_payload():
