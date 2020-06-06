@@ -1,12 +1,12 @@
 import re
+from datetime import datetime
 from urllib.parse import parse_qs
 
+import boto3
 import jmespath
 from pymysql.err import MySQLError
 
 from lib.slack import Slack
-from lib.connector import rdb_connector
-from lib.io import raw_query
 
 
 def slack_escape(s):
@@ -15,12 +15,26 @@ def slack_escape(s):
     return pattern.sub(lambda m: rep[m.group(0)], s)
 
 
-def serial_yield(engine):
-    for d in raw_query(engine, 'select * from dev_restrict'):
-        yield f"<{d['url']}|{d['title']}> <!date^{int(d['create_date'].timestamp())}^Posted {{date_num}} {{time_secs}}|Posted 2014-02-18 6:39:42 AM PST>"
+def serial_yield():
+    def timestamp(date_string):
+        try:
+            return int(datetime.fromisoformat(date_string).timestamp())
+        except (ValueError, TypeError):
+            return None
+
+    dynamodb = boto3.client('dynamodb')
+    for d in dynamodb.scan(TableName='secretary')['Items']:
+        parsed = jmespath.search(
+            '{url: id.S, channel: channel.S,'
+            'user: user.S title: title.S,'
+            'timestamp: timestamp.S}', d)
+        yield f"• <{parsed['url']}|{parsed['title']}>\n" \
+              f"  origin channel: <#{parsed['channel']}>\n" \
+              f"  origin user: {parsed['user']}\n" if parsed['user'] else '' \
+              f"  <!date^{timestamp(parsed['timestamp'])}^Posted {{date_num}} {{time_secs}}|Posted 2014-02-18 6:39:42 AM PST>\n" if parsed['timestamp'] else ''
 
 
-def pretty_payload(engine):
+def pretty_payload():
     try:
         payload = {
             "response_type": "in_channel",
@@ -36,9 +50,9 @@ def pretty_payload(engine):
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": slack_escape(s),
+                        "text": s,
                     }
-                } for s in serial_yield(engine)]
+                } for s in serial_yield()]
             ]
         }
     except MySQLError as e:
@@ -59,20 +73,22 @@ def slack_id_map():
     }
 
 
-def lambda_handler(event, context):
+def command_main(body):
     """
     https://api.slack.com/interactivity/slash-commands
     """
-    print(f'{event=}')
-    body = parse_qs(event['body'])
     command = body['text'][0]
-    engine = rdb_connector('/aurora/serverless', 'secretary')
-    if command == 'database':
-        payload = pretty_payload(engine)
+    if command == 'all link':
+        payload = pretty_payload()
     elif command == 'query':
         payload = None
     else:
         payload = None
-    print(f'{payload=}')
+    return payload
+
+
+def lambda_handler(event, context):
+    body = parse_qs(event['body'])
+    print(body)
     # TODO: timeout control
-    return Slack.server_response(200, body=payload)
+    return Slack.server_response(200, body=command_main(body))
