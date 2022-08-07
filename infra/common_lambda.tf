@@ -30,13 +30,13 @@ resource "aws_lambda_layer_version" "secretary_package" {
   layer_name = "secretary_package"
   filename = data.archive_file.package.output_path
   source_code_hash = data.archive_file.package.output_base64sha256
-  compatible_runtimes = ["python3.10"]
+  compatible_runtimes = ["python3.9"]
 }
 
 resource "aws_lambda_layer_version" "secretary_lib" {
   layer_name = "secretary_lib"
   filename = data.archive_file.lib.output_path
   source_code_hash = data.archive_file.lib.output_base64sha256
-  compatible_runtimes = ["python3.10"]
+  compatible_runtimes = ["python3.9"]
 }
 

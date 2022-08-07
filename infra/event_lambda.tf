@@ -52,7 +52,7 @@ resource "aws_lambda_function" "event_poll" {
   handler = "event_poll.lambda_handler"
 
   source_code_hash = data.archive_file.project.output_base64sha256
-  runtime = "python3.10"
+  runtime = "python3.9"
   timeout = 300
 
   role = aws_iam_role.secretary_for_lambda.arn
@@ -70,7 +70,7 @@ resource "aws_lambda_function" "event_message_changed" {
   handler = "event_message_changed.lambda_handler"
 
   source_code_hash = data.archive_file.project.output_base64sha256
-  runtime = "python3.10"
+  runtime = "python3.9"
   timeout = 300
 
   role = aws_iam_role.secretary_for_lambda.arn
@@ -88,7 +88,7 @@ resource "aws_lambda_function" "event_bot_message" {
   handler = "event_bot_message.lambda_handler"
 
   source_code_hash = data.archive_file.project.output_base64sha256
-  runtime = "python3.10"
+  runtime = "python3.9"
   timeout = 300
 
   role = aws_iam_role.secretary_for_lambda.arn
