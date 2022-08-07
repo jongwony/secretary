@@ -7,6 +7,10 @@ resource "aws_lambda_permission" "command_lambda_permission" {
   # The /*/*/* part allows invocation from any stage, method and resource path
   # within API Gateway REST API.
   source_arn = "${aws_api_gateway_rest_api.command_poll.execution_arn}/*/*/*"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_lambda_function" "command_poll" {

@@ -8,8 +8,8 @@ def test_msg():
     body = {'token': 'FcLrpGmG3VeCuyd7bUMQszKz', 'team_id': 'T48RY2MFH', 'api_app_id': 'ABRRHSHHU',
             'event': {'client_msg_id': 'cf450427-50da-46cf-8f08-64d797000fe5', 'type': 'message', 'text': 'asdfasdf',
                       'user': 'U78RDCCJE', 'ts': '1585462244.003200', 'team': 'T48RY2MFH', 'blocks': [
-                    {'type': 'rich_text', 'block_id': 'uqCH',
-                     'elements': [{'type': 'rich_text_section', 'elements': [{'type': 'text', 'text': 'asdfasdf'}]}]}],
+                          {'type': 'rich_text', 'block_id': 'uqCH',
+                           'elements': [{'type': 'rich_text_section', 'elements': [{'type': 'text', 'text': 'asdfasdf'}]}]}],
                       'channel': 'CGK4QNXNC', 'event_ts': '1585462244.003200', 'channel_type': 'channel'},
             'type': 'event_callback', 'event_id': 'Ev0111FLKTFY', 'event_time': 1585462244, 'authed_users': ['UU42MN82Y']}
     event_message_changed.lambda_handler({'headers': {}, 'body': json.dumps(body)}, None)
@@ -44,20 +44,20 @@ def test_attachments(monkeypatch):
                       'message': {'client_msg_id': 'd1921061-3cbe-42c0-8ce6-92ca8c393874', 'type': 'message',
                                   'text': '<https://mingrammer.com/translation-asynchronous-python/>', 'user': 'U78RDCCJE',
                                   'team': 'T48RY2MFH', 'attachments': [
-                              {'title': '[번역] 비동기 파이썬', 'title_link': 'https://mingrammer.com/translation-asynchronous-python/',
-                               'text': 'Asynchronous Python을 번역한 글입니다. 파이썬에서의 비동기 프로그래밍은 최근 점점 더 많은 인기를 끌고있다. 비동기 프로그래밍을 위한 파이썬 라이브러리는 많다. 그',
-                               'fallback': '[번역] 비동기 파이썬', 'ts': 1475452800,
-                               'from_url': 'https://mingrammer.com/translation-asynchronous-python/',
-                               'service_icon': 'https://mingrammer.com/images/favicon.ico', 'service_name': 'mingrammer.com',
-                               'id': 1, 'original_url': 'https://mingrammer.com/translation-asynchronous-python/'}], 'blocks': [
-                              {'type': 'rich_text', 'block_id': 'wQ8n', 'elements': [{'type': 'rich_text_section', 'elements': [
-                                  {'type': 'link', 'url': 'https://mingrammer.com/translation-asynchronous-python/'}]}]}],
+                                      {'title': '[번역] 비동기 파이썬', 'title_link': 'https://mingrammer.com/translation-asynchronous-python/',
+                                       'text': 'Asynchronous Python을 번역한 글입니다. 파이썬에서의 비동기 프로그래밍은 최근 점점 더 많은 인기를 끌고있다. 비동기 프로그래밍을 위한 파이썬 라이브러리는 많다. 그',
+                                       'fallback': '[번역] 비동기 파이썬', 'ts': 1475452800,
+                                       'from_url': 'https://mingrammer.com/translation-asynchronous-python/',
+                                       'service_icon': 'https://mingrammer.com/images/favicon.ico', 'service_name': 'mingrammer.com',
+                                       'id': 1, 'original_url': 'https://mingrammer.com/translation-asynchronous-python/'}], 'blocks': [
+                                      {'type': 'rich_text', 'block_id': 'wQ8n', 'elements': [{'type': 'rich_text_section', 'elements': [
+                                          {'type': 'link', 'url': 'https://mingrammer.com/translation-asynchronous-python/'}]}]}],
                                   'ts': '1585461761.002500'}, 'channel': 'CGK4QNXNC',
                       'previous_message': {'client_msg_id': 'd1921061-3cbe-42c0-8ce6-92ca8c393874', 'type': 'message',
                                            'text': '<https://mingrammer.com/translation-asynchronous-python/>',
                                            'user': 'U78RDCCJE', 'ts': '1585461761.002500', 'team': 'T48RY2MFH', 'blocks': [
-                              {'type': 'rich_text', 'block_id': 'wQ8n', 'elements': [{'type': 'rich_text_section', 'elements': [
-                                  {'type': 'link', 'url': 'https://mingrammer.com/translation-asynchronous-python/'}]}]}]},
+                                               {'type': 'rich_text', 'block_id': 'wQ8n', 'elements': [{'type': 'rich_text_section', 'elements': [
+                                                   {'type': 'link', 'url': 'https://mingrammer.com/translation-asynchronous-python/'}]}]}]},
                       'event_ts': '1585461762.002600', 'ts': '1585461762.002600', 'channel_type': 'channel'},
             'type': 'event_callback', 'event_id': 'Ev0111FHUP4N', 'event_time': 1585461762, 'authed_users': ['UU42MN82Y']}
     event_message_changed.lambda_handler({'headers': body, 'body': json.dumps(body)}, None)
