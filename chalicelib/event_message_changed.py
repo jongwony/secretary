@@ -6,6 +6,8 @@ from chalicelib.core.io import integrity_check, is_geek_news
 
 
 def attachment_main(event):
+    print(event)
+
     channel = jmespath.search('event.channel', event)
     user, origin_text = jmespath.search('event | message.[user, text] || [user, text]', event)
     attachments = jmespath.search('event.message.attachments[].[title_link, title, text]', event) or []
@@ -24,6 +26,7 @@ def attachment_main(event):
             integrity_check(
                 origin_url,
                 channel,
+                user=user,
                 title=title,
                 text=text,
                 geek_news_id=m.group(1),

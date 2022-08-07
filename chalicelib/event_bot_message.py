@@ -22,6 +22,12 @@ def geek_news_validator(parsed):
 
 
 def geek_news_main(event):
+    print(event)
+
+    author = event.get('api_app_id')
+    if author == 'ABRRHSHHU':
+        return
+
     parsed = bot_request(event)
     if m := is_geek_news(parsed['link_block']):
         resp = requests.get(m.group())
@@ -31,6 +37,7 @@ def geek_news_main(event):
         integrity_check(
             origin_url,
             parsed['channel'],
+            user=author,
             title=parsed['title'],
             text=parsed['text_block'],
             geek_news_id=m.group(1),

@@ -83,6 +83,15 @@ def integrity_check(url, channel, **kwargs):
                 "elements": [
                     {
                         "type": "mrkdwn",
+                        "text": f"user: <@{item.get('user', 'null')}>"
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
                         "text": f"geek_news_id: {item.get('geek_news_id', 'null')}"
                     }
                 ]
