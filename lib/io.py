@@ -40,9 +40,61 @@ def nosql_body_dump(body):
 
 
 def integrity_check(url, channel, **kwargs):
-    def post_slack():
+    def build_blocks(item):
+        return [
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"중복 URL: <{item['id']}>"
+                    }
+                ]
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"title: {item['title']}"
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"channel: <#{item['channel']}>"
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"geek_news_id: {item['geek_news_id']}"
+                    }
+                ]
+            },
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"first_touch: {item['timestamp']}"
+                    }
+                ]
+            }
+        ]
+
+    def post_slack(item):
         bot = Slack()
-        bot.post_message(text=f'중복 url: {url}', channel=channel, username='Link Crawler')
+        bot.post_message(blocks=build_blocks(item), channel=channel, username='Link Crawler')
 
     data = {
         'id': url,
@@ -53,11 +105,8 @@ def integrity_check(url, channel, **kwargs):
     dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
     nosql_table = dynamodb.Table('secretary')
 
-    try:
-        response = nosql_table.get_item(Key={'id': url})
-        assert response.get('Item') is None
-    except AssertionError as e:
-        print(e, url)
-        post_slack()
+    response = nosql_table.get_item(Key={'id': url})
+    if response.get('Item') is None:
+        post_slack(response['Item'])
     else:
         nosql_body_dump(data)

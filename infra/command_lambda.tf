@@ -17,7 +17,7 @@ resource "aws_lambda_function" "command_poll" {
   handler = "command_poll.lambda_handler"
 
   source_code_hash = data.archive_file.project.output_base64sha256
-  runtime = "python3.8"
+  runtime = "python3.10"
   timeout = 300
 
   role = aws_iam_role.secretary_for_lambda.arn

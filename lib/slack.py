@@ -112,11 +112,12 @@ class Slack:
         self.channel = channel
         self.username = username
 
-    def post_message(self, text=None, channel=None, username=None, attachments=None, mention=False):
+    def post_message(self, text=None, channel=None, username=None, blocks=None, attachments=None, mention=False):
         self.slack.chat.post_message(
             text=text,
             channel=channel or self.channel,
             username=username or self.username,
+            blocks=blocks,
             attachments=attachments,
             link_names=int(mention)
         )
