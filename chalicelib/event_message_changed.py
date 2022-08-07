@@ -14,6 +14,10 @@ def attachment_main(event):
     blocks = jmespath.search('event.message.blocks[] || event.blocks[]', event)
     urls = jmespath.search('[].elements[].elements[].url', blocks) or []
 
+    if user == 'UU42MN82Y':
+        # secretary bot
+        return
+
     if not attachments:
         return
 
