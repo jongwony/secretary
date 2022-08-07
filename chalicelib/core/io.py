@@ -1,10 +1,11 @@
+import json
 from datetime import datetime
 from contextlib import contextmanager
 
 import boto3
 from pymysql.cursors import SSDictCursor
 
-from .slack import Slack
+from chalicelib.core.slack import Slack
 
 
 def sql_streaming(sql, connector):
@@ -47,7 +48,7 @@ def integrity_check(url, channel, **kwargs):
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"중복 URL: <{item['id']}>"
+                        "text": f"중복 URL: <{item.get('id', 'null')}>"
                     }
                 ]
             },
@@ -59,7 +60,7 @@ def integrity_check(url, channel, **kwargs):
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"title: {item['title']}"
+                        "text": f"title: {item.get('title', 'null')}"
                     }
                 ]
             },
@@ -68,7 +69,7 @@ def integrity_check(url, channel, **kwargs):
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"channel: <#{item['channel']}>"
+                        "text": f"channel: <#{item.get('channel', 'null')}>"
                     }
                 ]
             },
@@ -77,7 +78,7 @@ def integrity_check(url, channel, **kwargs):
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"geek_news_id: {item['geek_news_id']}"
+                        "text": f"geek_news_id: {item.get('geek_news_id', 'null')}"
                     }
                 ]
             },
@@ -86,7 +87,7 @@ def integrity_check(url, channel, **kwargs):
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"first_touch: {item['timestamp']}"
+                        "text": f"first_touch: {item.get('timestamp', 'null')}"
                     }
                 ]
             }
@@ -94,7 +95,8 @@ def integrity_check(url, channel, **kwargs):
 
     def post_slack(item):
         bot = Slack()
-        bot.post_message(blocks=build_blocks(item), channel=channel, username='Link Crawler')
+        blocks = build_blocks(item)
+        bot.post_message(blocks=json.dumps(blocks), channel=channel, username='Link Crawler')
 
     data = {
         'id': url,
@@ -106,7 +108,7 @@ def integrity_check(url, channel, **kwargs):
     nosql_table = dynamodb.Table('secretary')
 
     response = nosql_table.get_item(Key={'id': url})
-    if response.get('Item') is None:
+    if response.get('Item'):
         post_slack(response['Item'])
     else:
         nosql_body_dump(data)

@@ -3,3 +3,4 @@ sqlalchemy
 slacker
 requests
 bs4
+chalice

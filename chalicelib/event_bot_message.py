@@ -1,20 +1,19 @@
-import json
 import re
 
 import jmespath
 import requests
 from bs4 import BeautifulSoup
 
-from lib.io import integrity_check
+from chalicelib.core.io import integrity_check
 
 
-def geek_news_parser(body):
+def geek_news_request(event):
     return jmespath.search(
         'event.{'
         'channel: channel,'
         'title: text,'
         "link_block: blocks[?text.type == 'mrkdwn'] | [0].text.text,"
-        "text_block : blocks[?text.type == 'plain_text'] | [0].text.text}", body
+        "text_block : blocks[?text.type == 'plain_text'] | [0].text.text}", event
     )
 
 
@@ -22,8 +21,8 @@ def geek_news_validator(parsed):
     return re.search(r'https?://news.hada.io/topic\?id=(\d+)', parsed['link_block'])
 
 
-def geek_news_main(body):
-    parsed = geek_news_parser(body)
+def geek_news_main(event):
+    parsed = geek_news_request(event)
     if m := geek_news_validator(parsed):
         resp = requests.get(m.group())
         soup = BeautifulSoup(resp.content, 'html.parser')
@@ -36,8 +35,3 @@ def geek_news_main(body):
             text=parsed['text_block'],
             geek_news_id=m.group(1),
         )
-
-
-def lambda_handler(event, context):
-    body = json.loads(event.pop('body'))
-    geek_news_main(body)

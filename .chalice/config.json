@@ -1,0 +1,6 @@
+{
+  "version": "2.0",
+  "app_name": "secretary",
+  "manage_iam_role": false,
+  "iam_role_arn": "arn:aws:iam::237943334087:role/secretary_for_lambda"
+}

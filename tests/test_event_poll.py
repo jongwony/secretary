@@ -1,7 +1,7 @@
 import json
 
-from lambda_function import event_poll
-from lambda_function import event_message_changed
+from chalicelib import event_poll
+from chalicelib import event_message_changed
 
 
 def test_msg():
@@ -28,7 +28,7 @@ def test_error():
                'X-Forwarded-Port': '443', 'X-Forwarded-Proto': 'https', 'X-Slack-Request-Timestamp': '1585462247',
                'X-Slack-Retry-Num': '1', 'X-Slack-Retry-Reason': 'http_error',
                'X-Slack-Signature': 'v0=1c7158802a71be161fa9ad0ff8cd4c7976f58d9c7e6cd6a98041821aa5241b42'}
-    result = event_poll.main({'headers': headers, 'body': ''})
+    result = event_poll.dispatcher({'headers': headers, 'body': ''})
     assert result['headers']['X-Slack-No-Retry'] == 1
 
 

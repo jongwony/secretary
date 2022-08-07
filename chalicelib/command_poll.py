@@ -6,7 +6,7 @@ import boto3
 import jmespath
 from pymysql.err import MySQLError
 
-from lib.slack import Slack
+from chalicelib.core.slack import Slack
 
 
 def slack_escape(s):

@@ -1,0 +1,27 @@
+{
+  "resources": [
+    {
+      "name": "event_message_changed",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:ap-northeast-2:237943334087:function:secretary-dev-event_message_changed"
+    },
+    {
+      "name": "event_bot_message",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:ap-northeast-2:237943334087:function:secretary-dev-event_bot_message"
+    },
+    {
+      "name": "api_handler",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:ap-northeast-2:237943334087:function:secretary-dev"
+    },
+    {
+      "name": "rest_api",
+      "resource_type": "rest_api",
+      "rest_api_id": "ucn3byw7wj",
+      "rest_api_url": "https://ucn3byw7wj.execute-api.ap-northeast-2.amazonaws.com/api/"
+    }
+  ],
+  "schema_version": "2.0",
+  "backend": "api"
+}

@@ -1,9 +1,4 @@
-python
-*.zip
-venv/
-.idea/
 __pycache__/
 
-.terraform/
-*.tfstate
-*.tfstate.backup
+.chalice/deployments/
+.chalice/venv/

@@ -1,7 +1,7 @@
 from urllib.parse import parse_qs
 
-from lambda_function import command_poll
-from lib.connector import rdb_connector
+from chalicelib import command_poll
+from chalicelib.core.connector import rdb_connector
 
 
 def test_do_database():
@@ -52,6 +52,7 @@ def test_do_database():
     payload = command_poll.pretty_payload(engine)
     print(payload)
     assert payload['response_type'] == 'in_channel'
+
 
 def test_test():
     event = {'resource': '/command_poll', 'path': '/command_poll', 'httpMethod': 'POST',
