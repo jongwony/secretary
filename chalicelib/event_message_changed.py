@@ -1,6 +1,8 @@
+import requests
 import jmespath
+from bs4 import BeautifulSoup
 
-from chalicelib.core.io import integrity_check
+from chalicelib.core.io import integrity_check, is_geek_news
 
 
 def attachment_main(event):
@@ -14,7 +16,20 @@ def attachment_main(event):
         return
 
     for url, title, text in attachments:
-        integrity_check(url, channel, user=user, title=title, text=text, origin_text=origin_text)
+        if m := is_geek_news(url):
+            resp = requests.get(m.group())
+            soup = BeautifulSoup(resp.content, 'html.parser')
+            origin_a = soup.select_one('td.topictitle a')
+            origin_url = origin_a.attrs.get('href')
+            integrity_check(
+                origin_url,
+                channel,
+                title=title,
+                text=text,
+                geek_news_id=m.group(1),
+            )
+        else:
+            integrity_check(url, channel, user=user, title=title, text=text, origin_text=origin_text)
 
     if diff_set := set(urls) - set(x[0] for x in attachments):
         for url in diff_set:

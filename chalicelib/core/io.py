@@ -1,3 +1,4 @@
+import re
 import json
 from datetime import datetime
 from contextlib import contextmanager
@@ -38,6 +39,10 @@ def nosql_body_dump(body):
     dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
     nosql_table = dynamodb.Table('secretary')
     return nosql_table.put_item(Item=body)
+
+
+def is_geek_news(url):
+    return re.search(r'https?://news.hada.io/topic\?id=(\d+)', url)
 
 
 def integrity_check(url, channel, **kwargs):

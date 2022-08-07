@@ -4,10 +4,10 @@ import jmespath
 import requests
 from bs4 import BeautifulSoup
 
-from chalicelib.core.io import integrity_check
+from chalicelib.core.io import integrity_check, is_geek_news
 
 
-def geek_news_request(event):
+def bot_request(event):
     return jmespath.search(
         'event.{'
         'channel: channel,'
@@ -22,8 +22,8 @@ def geek_news_validator(parsed):
 
 
 def geek_news_main(event):
-    parsed = geek_news_request(event)
-    if m := geek_news_validator(parsed):
+    parsed = bot_request(event)
+    if m := is_geek_news(parsed['link_block']):
         resp = requests.get(m.group())
         soup = BeautifulSoup(resp.content, 'html.parser')
         origin_a = soup.select_one('td.topictitle a')
