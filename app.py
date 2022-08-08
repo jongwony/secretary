@@ -14,7 +14,7 @@ def event_poll():
     request = app.current_request.to_dict()
     json_body = app.current_request.json_body
     print(request)
-    if request['headers'].get('x-slack-no-retry'):
+    if request['headers'].get('x-slack-retry-num'):
         return Response(body='retry', headers={'X-Slack-No-Retry': '1'})
     print(json_body)
     result = dispatcher(TypeDiverge, json_body, 'type')
