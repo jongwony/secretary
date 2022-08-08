@@ -29,7 +29,8 @@ class MessageSubtypeDiverge:
             InvocationType='Event',
             Payload=json.dumps(body).encode()
         )
-        return "success"
+        print('invoke secretary-dev-event_message_changed')
+        return 'success'
 
     @classmethod
     def bot_message(cls, body):
@@ -39,7 +40,8 @@ class MessageSubtypeDiverge:
             InvocationType='Event',
             Payload=json.dumps(body).encode()
         )
-        return "success"
+        print('invoke secretary-dev-event_bot_message')
+        return 'success'
 
 
 def dispatcher(cls, body, query):

@@ -11,7 +11,7 @@ def bot_request(event):
     return jmespath.search(
         'event.{'
         'channel: channel,'
-        'user: user,'
+        'user_id: user_id,'
         'title: text,'
         "link_block: blocks[?text.type == 'mrkdwn'] | [0].text.text,"
         "text_block : blocks[?text.type == 'plain_text'] | [0].text.text}", event
@@ -34,7 +34,7 @@ def geek_news_main(event):
         integrity_check(
             origin_url,
             parsed['channel'],
-            user=parsed['user'],
+            user=parsed['user_id'],
             title=parsed['title'],
             text=parsed['text_block'],
             geek_news_id=m.group(1),
